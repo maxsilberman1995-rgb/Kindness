@@ -632,16 +632,12 @@
   <div class="whoop-modal-overlay" id="whoop-modal-overlay">
     <div class="whoop-modal">
       <h2>Connect WHOOP</h2>
-      <p class="modal-sub">Enter your WHOOP Developer App credentials. These are stored only in your browser.</p>
+      <p class="modal-sub">Enter your WHOOP Developer App Client ID. Stored only in your browser — no server involved.</p>
       <div class="whoop-redirect-label">Add this Redirect URI in your WHOOP app settings</div>
       <div class="whoop-redirect-box" id="whoop-redirect-uri-display"></div>
       <div class="whoop-field">
         <label>Client ID</label>
         <input type="text" id="whoop-client-id-input" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
-      </div>
-      <div class="whoop-field">
-        <label>Client Secret</label>
-        <input type="password" id="whoop-client-secret-input" placeholder="Your client secret" />
       </div>
       <div class="whoop-modal-btns">
         <button class="whoop-modal-cancel" onclick="closeWhoopModal()">Cancel</button>
@@ -1243,7 +1239,6 @@
       document.getElementById('whoop-redirect-uri-display').textContent = getRedirectUri();
       const savedId = localStorage.getItem('whoop_client_id') || '';
       document.getElementById('whoop-client-id-input').value = savedId;
-      document.getElementById('whoop-client-secret-input').value = '';
       document.getElementById('whoop-modal-overlay').classList.add('open');
     }
 
@@ -1253,23 +1248,36 @@
 
     function saveWhoopCredentials() {
       const id  = document.getElementById('whoop-client-id-input').value.trim();
-      const sec = document.getElementById('whoop-client-secret-input').value.trim();
-      if (!id || !sec) { alert('Please enter both Client ID and Client Secret.'); return; }
+      if (!id) { alert('Please enter your Client ID.'); return; }
       localStorage.setItem('whoop_client_id', id);
-      localStorage.setItem('whoop_client_secret', sec);
       closeWhoopModal();
       startOAuthFlow(id);
     }
 
-    function startOAuthFlow(clientId) {
+    async function generatePKCE() {
+      const array    = new Uint8Array(32);
+      crypto.getRandomValues(array);
+      const verifier = btoa(String.fromCharCode(...array))
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+      const digest   = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier));
+      const challenge = btoa(String.fromCharCode(...new Uint8Array(digest)))
+        .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+      return { verifier, challenge };
+    }
+
+    async function startOAuthFlow(clientId) {
       const state = Math.random().toString(36).substr(2, 16);
-      localStorage.setItem('whoop_oauth_state', state);
+      const { verifier, challenge } = await generatePKCE();
+      localStorage.setItem('whoop_oauth_state',    state);
+      localStorage.setItem('whoop_pkce_verifier',  verifier);
       const params = new URLSearchParams({
-        client_id:     clientId,
-        redirect_uri:  getRedirectUri(),
-        response_type: 'code',
-        scope:         WHOOP_SCOPES,
-        state:         state,
+        client_id:             clientId,
+        redirect_uri:          getRedirectUri(),
+        response_type:         'code',
+        scope:                 WHOOP_SCOPES,
+        state:                 state,
+        code_challenge:        challenge,
+        code_challenge_method: 'S256',
       });
       window.location.href = WHOOP_AUTH_URL + '?' + params.toString();
     }
@@ -1309,11 +1317,11 @@
         return;
       }
 
-      const clientId  = localStorage.getItem('whoop_client_id');
-      const clientSec = localStorage.getItem('whoop_client_secret');
+      const clientId   = localStorage.getItem('whoop_client_id');
+      const verifier   = localStorage.getItem('whoop_pkce_verifier');
 
-      if (!clientId || !clientSec) {
-        showWhoopConnectStatus('Credentials missing', 'Please enter your Client ID and Secret again.', 'Connect', openWhoopModal);
+      if (!clientId) {
+        showWhoopConnectStatus('Credentials missing', 'Please enter your Client ID again.', 'Connect', openWhoopModal);
         return;
       }
 
@@ -1326,7 +1334,7 @@
             code:          code,
             redirect_uri:  getRedirectUri(),
             client_id:     clientId,
-            client_secret: clientSec,
+            code_verifier: verifier,
           }),
         });
 
@@ -1337,24 +1345,24 @@
           localStorage.setItem('whoop_access_token',  data.access_token);
           localStorage.setItem('whoop_refresh_token', data.refresh_token || '');
           localStorage.setItem('whoop_token_expiry',  Date.now() + (data.expires_in || 3600) * 1000);
+          localStorage.removeItem('whoop_pkce_verifier');
           await loadWhoopData();
         } else {
           const msg = data.error_description || data.error || `HTTP ${res.status}`;
-          showWhoopConnectStatus('Token exchange failed', `WHOOP said: "${msg}". Check that your Client Secret is correct and the Redirect URI matches exactly.`, 'Try Again', openWhoopModal);
+          showWhoopConnectStatus('Token exchange failed', `WHOOP said: "${msg}". Verify your Client ID and Redirect URI match exactly.`, 'Try Again', openWhoopModal);
         }
       } catch (e) {
         showWhoopConnectStatus(
           'Connection failed',
-          `Network error during token exchange: ${e.message}. This may be a CORS issue — try opening the browser console (F12) for details.`,
+          `Network error during token exchange: ${e.message}. Open the browser console (F12) for details.`,
           'Try Again', openWhoopModal
         );
       }
     }
 
     async function refreshWhoopToken() {
-      const clientId      = localStorage.getItem('whoop_client_id');
-      const clientSec     = localStorage.getItem('whoop_client_secret');
-      const refreshToken  = localStorage.getItem('whoop_refresh_token');
+      const clientId     = localStorage.getItem('whoop_client_id');
+      const refreshToken = localStorage.getItem('whoop_refresh_token');
       if (!refreshToken) return null;
       try {
         const res = await fetch(WHOOP_TOKEN_URL, {
@@ -1364,7 +1372,6 @@
             grant_type:    'refresh_token',
             refresh_token: refreshToken,
             client_id:     clientId,
-            client_secret: clientSec,
           }),
         });
         const data = await res.json();
@@ -1388,7 +1395,7 @@
 
     function disconnectWhoop() {
       ['whoop_access_token','whoop_refresh_token','whoop_token_expiry',
-       'whoop_client_id','whoop_client_secret','whoop_oauth_state'].forEach(k => localStorage.removeItem(k));
+       'whoop_client_id','whoop_oauth_state','whoop_pkce_verifier'].forEach(k => localStorage.removeItem(k));
       document.getElementById('whoop-data-card').style.display    = 'none';
       document.getElementById('whoop-connect-card').style.display = 'block';
     }
