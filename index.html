@@ -686,9 +686,9 @@
     <!-- WHOOP: connect prompt -->
     <div class="whoop-connect-card" id="whoop-connect-card">
       <div class="whoop-connect-logo">WHOOP</div>
-      <div class="whoop-connect-title">Connect your WHOOP</div>
-      <p class="whoop-connect-desc">Personalize your daily missions based on your recovery score, sleep, and strain data.</p>
-      <button class="whoop-connect-btn" onclick="openWhoopModal()">Connect WHOOP Account</button>
+      <div class="whoop-connect-title" id="whoop-connect-title">Connect your WHOOP</div>
+      <p class="whoop-connect-desc" id="whoop-connect-desc">Personalize your daily missions based on your recovery score, sleep, and strain data.</p>
+      <button class="whoop-connect-btn" id="whoop-connect-btn" onclick="openWhoopModal()">Connect WHOOP Account</button>
     </div>
 
     <div class="quote-card">
@@ -1274,20 +1274,48 @@
       window.location.href = WHOOP_AUTH_URL + '?' + params.toString();
     }
 
+    function showWhoopConnectStatus(title, desc, btnLabel, btnFn) {
+      document.getElementById('whoop-connect-card').style.display = 'block';
+      document.getElementById('whoop-data-card').style.display    = 'none';
+      document.getElementById('whoop-connect-title').textContent  = title;
+      document.getElementById('whoop-connect-desc').textContent   = desc;
+      const btn = document.getElementById('whoop-connect-btn');
+      btn.textContent = btnLabel;
+      btn.onclick     = btnFn || openWhoopModal;
+      btn.style.display = btnLabel ? 'inline-flex' : 'none';
+    }
+
     async function handleOAuthCallback() {
       const params = new URLSearchParams(window.location.search);
       const code  = params.get('code');
       const state = params.get('state');
+      const error = params.get('error');
+
+      if (error) {
+        window.history.replaceState({}, '', window.location.pathname);
+        showWhoopConnectStatus('Authorization denied', `WHOOP returned: ${error}. You can try again.`, 'Try Again', openWhoopModal);
+        return;
+      }
+
       if (!code) return;
 
-      // Clean URL immediately
+      // Show loading state
+      showWhoopConnectStatus('Connecting…', 'Exchanging authorization code with WHOOP.', '', null);
       window.history.replaceState({}, '', window.location.pathname);
 
       const savedState = localStorage.getItem('whoop_oauth_state');
-      if (state !== savedState) { console.error('WHOOP: state mismatch'); return; }
+      if (state !== savedState) {
+        showWhoopConnectStatus('Connection failed', 'Security state mismatch. Please try connecting again.', 'Try Again', openWhoopModal);
+        return;
+      }
 
       const clientId  = localStorage.getItem('whoop_client_id');
       const clientSec = localStorage.getItem('whoop_client_secret');
+
+      if (!clientId || !clientSec) {
+        showWhoopConnectStatus('Credentials missing', 'Please enter your Client ID and Secret again.', 'Connect', openWhoopModal);
+        return;
+      }
 
       try {
         const res = await fetch(WHOOP_TOKEN_URL, {
@@ -1301,17 +1329,25 @@
             client_secret: clientSec,
           }),
         });
-        const data = await res.json();
+
+        let data;
+        try { data = await res.json(); } catch { data = {}; }
+
         if (data.access_token) {
           localStorage.setItem('whoop_access_token',  data.access_token);
           localStorage.setItem('whoop_refresh_token', data.refresh_token || '');
           localStorage.setItem('whoop_token_expiry',  Date.now() + (data.expires_in || 3600) * 1000);
           await loadWhoopData();
         } else {
-          console.error('WHOOP token error:', data);
+          const msg = data.error_description || data.error || `HTTP ${res.status}`;
+          showWhoopConnectStatus('Token exchange failed', `WHOOP said: "${msg}". Check that your Client Secret is correct and the Redirect URI matches exactly.`, 'Try Again', openWhoopModal);
         }
       } catch (e) {
-        console.error('WHOOP token exchange failed:', e);
+        showWhoopConnectStatus(
+          'Connection failed',
+          `Network error during token exchange: ${e.message}. This may be a CORS issue — try opening the browser console (F12) for details.`,
+          'Try Again', openWhoopModal
+        );
       }
     }
 
