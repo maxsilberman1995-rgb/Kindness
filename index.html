@@ -165,36 +165,6 @@
     .streak-label { font-size: 11px; color: #aaa; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
     .date { font-size: 12px; color: #ccc; margin-top: 16px; text-align: center; }
 
-    /* ── TIP CARD ── */
-    .tip-card {
-      background: linear-gradient(135deg, #fff9c4, #fffde7);
-      border: 2px solid #ffe082;
-      border-radius: 20px;
-      padding: 24px 28px;
-    }
-
-    .tip-label {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: #f9a825;
-      margin-bottom: 8px;
-    }
-
-    .tip-title {
-      font-size: 17px;
-      font-weight: 800;
-      color: #1a1a2e;
-      margin-bottom: 8px;
-    }
-
-    .tip-text {
-      font-size: 14px;
-      color: #666;
-      line-height: 1.7;
-    }
-
     /* ── HISTORY / ARCHIVE ── */
     .page-title {
       font-size: 22px;
@@ -295,7 +265,6 @@
   <nav>
     <button onclick="showPage('today')" id="nav-today" class="active">Today</button>
     <button onclick="showPage('missions')" id="nav-missions">Past Missions</button>
-    <button onclick="showPage('tips')" id="nav-tips">Tips Archive</button>
   </nav>
 
   <!-- ── TODAY ── -->
@@ -319,11 +288,6 @@
       <div class="date" id="today-date"></div>
     </div>
 
-    <div class="tip-card" id="tip-card">
-      <div class="tip-label">💡 Happiness Tip of the Day</div>
-      <div class="tip-title" id="tip-title"></div>
-      <div class="tip-text" id="tip-text"></div>
-    </div>
   </div>
 
   <!-- ── PAST MISSIONS ── -->
@@ -332,79 +296,42 @@
     <div id="missions-list"></div>
   </div>
 
-  <!-- ── TIPS ARCHIVE ── -->
-  <div class="page" id="page-tips">
-    <div class="page-title">💡 Tips Archive</div>
-    <div id="tips-list"></div>
-  </div>
 
   <script>
     // ── DATA ──────────────────────────────────────────────
     const MISSIONS = [
-      { emoji: "😊", title: "Smile at a Stranger", desc: "Make eye contact and give a genuine smile to the next person you pass — a neighbor, cashier, or commuter. Hold it for a full second." },
-      { emoji: "📝", title: "Leave a Positive Note", desc: "Write one specific, encouraging sentence on a sticky note and place it on a coworker's monitor, inside a library book, or on a public mirror." },
-      { emoji: "☕", title: "Buy Someone's Coffee", desc: "When you order today, pay for the drink of the person behind you and ask the barista to tell them it's from a stranger." },
-      { emoji: "📞", title: "Call Someone You Miss", desc: "Pick one person you haven't spoken to in over a month. Call — not text — and say 'I was thinking about you and wanted to hear your voice.'" },
-      { emoji: "🌱", title: "Give a Specific Compliment", desc: "Compliment someone on a decision, habit, or quality you genuinely admire. Be specific: not 'you're great' but 'the way you handled that meeting was impressive.'" },
-      { emoji: "🤝", title: "Help Without Being Asked", desc: "Spot one task someone near you is struggling with today — carrying bags, finding directions, reaching something — and offer to help before they ask." },
-      { emoji: "🌻", title: "Share Something Uplifting", desc: "Send one friend a specific article, song, or video that genuinely made you happy, with a one-line note explaining exactly why you thought of them." },
-      { emoji: "🗑️", title: "Pick Up Three Pieces of Litter", desc: "On your next walk outside, stop and pick up exactly three pieces of litter you see. Bring a bag if needed. Small acts of environmental care add up." },
-      { emoji: "⭐", title: "Write a Glowing Review", desc: "Leave a 5-star review for a small business, local restaurant, or independent creator you genuinely love. Mention one specific employee or detail by name." },
-      { emoji: "👂", title: "Listen Without Interrupting", desc: "In your next face-to-face conversation, put your phone face-down, make eye contact, and wait three full seconds after they finish before you respond." },
-      { emoji: "🍪", title: "Share Food with Someone", desc: "Bring a snack — a bag of chips, some fruit, a box of cookies — to share with coworkers, neighbors, or classmates today. No occasion needed." },
-      { emoji: "💌", title: "Send a Gratitude Message", desc: "Text or email one person and name the exact thing they did that helped you. Be specific: 'When you covered for me last Tuesday, it genuinely saved me.'" },
-      { emoji: "🎁", title: "Give Away Something Useful", desc: "Find one item in your home you haven't used in six months. Donate it, hand it to a neighbor, or post it free on a local community group today." },
-      { emoji: "🧹", title: "Do a Chore for Someone Else", desc: "Without announcing it, do one household chore that isn't yours — unload the dishwasher, take out the trash, fold laundry. Just do it and say nothing." },
-      { emoji: "🌟", title: "Acknowledge Invisible Hard Work", desc: "Find one person who works hard but rarely gets thanked — a janitor, delivery driver, or support rep — look them in the eye and thank them specifically." },
-      { emoji: "🐾", title: "Show Love to an Animal", desc: "Spend five intentional minutes with a pet, volunteer for one hour at a shelter, or donate a bag of food to a local animal rescue today." },
-      { emoji: "🤲", title: "Donate to a Cause", desc: "Choose one local charity, mutual aid fund, or crowdfunding campaign and make a donation — even $5 counts. Search '[your city] mutual aid fund' to start." },
-      { emoji: "🚶", title: "Let Someone Go First", desc: "Intentionally yield three times today — in traffic, in line, in a doorway — without expecting acknowledgment. Notice how it feels." },
-      { emoji: "📚", title: "Teach Someone a Skill", desc: "Share one practical skill you know with someone who could use it today — a keyboard shortcut, a recipe, a budgeting trick, a repair tip." },
-      { emoji: "🌈", title: "Celebrate Someone's Win", desc: "Text one person 'What's the best thing that happened to you this week?' When they respond, celebrate their answer with at least two enthusiastic sentences." },
-      { emoji: "💬", title: "Check In on a Friend", desc: "Message one friend with 'Hey — genuinely asking, how are you doing lately?' Wait for their real answer before shifting to yourself." },
-      { emoji: "🕯️", title: "Encourage Someone's Goal", desc: "Find someone working toward a goal and give them one concrete, specific reason you believe they'll succeed. Reference something you've actually seen them do." },
-      { emoji: "🧃", title: "Bring Refreshments to a Group", desc: "Show up to your next meeting, class, or gathering with drinks or a snack for everyone. Text ahead to ask if anyone has allergies." },
-      { emoji: "🏘️", title: "Introduce Yourself to a Neighbor", desc: "Knock on the door of one neighbor you've never spoken to. Introduce yourself, share your apartment or house number, and invite them to reach out anytime." },
-      { emoji: "🎶", title: "Dedicate a Song to Someone", desc: "Send one person a song that made you think of them, name the exact lyric or moment that reminded you of them, and hit send." },
-      { emoji: "🛍️", title: "Support a Local Business", desc: "Make one purchase today from an independently owned shop, café, or restaurant instead of a chain. If possible, tell them why you chose them." },
-      { emoji: "🌍", title: "Make One Eco-Conscious Swap", desc: "Make one deliberate, single-use swap today: bring a reusable bag, skip the plastic straw, or pack a lunch instead of takeout." },
-      { emoji: "🧡", title: "Release a Small Grudge", desc: "Pick one minor irritation or resentment you've been holding onto. Write it down, then cross it out. You don't have to tell anyone — just let it go." },
-      { emoji: "🎂", title: "Remember an Important Date", desc: "Check your contacts or social profiles for an upcoming birthday or anniversary in the next two weeks. Plan a card, call, or small gesture now." },
-      { emoji: "🤗", title: "Offer a Hug", desc: "Ask someone who's been stressed or struggling, 'Would a hug help?' If they say yes, give them a genuine, unhurried one. Ask first, always." },
+      { emoji: "🚶", title: "Take a Nature Walk", desc: "Step outside for at least 20 minutes with no destination in mind. Leave your phone in your pocket and just notice what's around you." },
+      { emoji: "🍳", title: "Cook Your Favorite Meal", desc: "Make the meal you love most — not what's convenient. Take your time, use real ingredients, and eat it slowly without distractions." },
+      { emoji: "📚", title: "Read for Pure Pleasure", desc: "Spend 30 minutes reading something you genuinely enjoy — a novel, a magazine, anything that excites you. No self-improvement books today." },
+      { emoji: "🎵", title: "Listen to a Full Album", desc: "Put on an album you love, start to finish, with no skipping. Lie down, close your eyes, and just listen. Let it be the only thing you do." },
+      { emoji: "💪", title: "Move Your Body Your Way", desc: "Do any physical activity you actually enjoy for 30 minutes — a run, dancing in your room, a bike ride, yoga. Make it fun, not a chore." },
+      { emoji: "📞", title: "Call Someone Who Makes You Laugh", desc: "Call the person who reliably puts you in a good mood. No agenda — just catch up and let the conversation go wherever it goes." },
+      { emoji: "🎨", title: "Make Something With Your Hands", desc: "Draw, paint, cook, build, write, or craft anything at all. The goal isn't quality — it's the meditative joy of making." },
+      { emoji: "🛁", title: "Take a Luxurious Shower or Bath", desc: "Use the good soap. Take your time. Don't rush. Treat your body like it deserves real care today — because it does." },
+      { emoji: "☕", title: "Have a Slow Morning", desc: "No phone for the first hour. Make coffee or tea deliberately, sit somewhere comfortable, and ease into the day at your own pace." },
+      { emoji: "🌅", title: "Watch the Sunrise or Sunset", desc: "Step outside or find a window and watch the sky change colors from start to finish. Give it your full, unhurried attention." },
+      { emoji: "🎮", title: "Play Without Guilt", desc: "Do something purely fun for an hour — a video game, a board game, a puzzle. Play like a kid and feel zero guilt about it." },
+      { emoji: "🧘", title: "Sit in Complete Silence", desc: "Find 15 minutes with no phone, no music, no podcast. Just sit and let your mind settle. It'll feel uncomfortable at first — then deeply good." },
+      { emoji: "🎬", title: "Watch a Movie That Moves You", desc: "Pick a film that makes you feel something — a comedy that cracks you up, a drama that hits deep. Watch it on a real screen, lights off." },
+      { emoji: "✍️", title: "Write in a Journal", desc: "Spend 15 minutes writing freely — no editing, no audience. Write about what's making you happy, what you want, or anything at all." },
+      { emoji: "🌿", title: "Spend Time in a Green Space", desc: "Find a park, garden, trail, or even a tree-lined street. Sit on the grass, touch a tree, breathe deep. Let nature do its work." },
+      { emoji: "🛒", title: "Buy Yourself Something Small", desc: "Get the fancy coffee, the book you've been eyeing, the snack you always skip. A small, intentional treat — just because." },
+      { emoji: "🤸", title: "Stretch for 10 Minutes", desc: "Put on music you like and stretch slowly, focusing on whatever feels tight. Notice how much better your whole body feels in under 10 minutes." },
+      { emoji: "🧩", title: "Find Your Flow", desc: "Pick an activity that pulls you into a flow state — a puzzle, a sketch, a song, code, a recipe. Aim to lose complete track of time." },
+      { emoji: "🌊", title: "Find Water", desc: "Spend time near water today — a lake, a river, the ocean, or even a fountain. Being near water has a measurably calming effect on the mind." },
+      { emoji: "😂", title: "Schedule 30 Minutes of Laughter", desc: "Find a comedian, clip, or show you know makes you genuinely laugh out loud. Laughter lowers cortisol and is legitimately medicine." },
+      { emoji: "🍦", title: "Eat Something You Love", desc: "Get or make the food that genuinely brings you joy today — your comfort food, your favorite dessert. Savor every single bite." },
+      { emoji: "📷", title: "Notice Beautiful Things", desc: "Spend your day looking for beauty — interesting light, a great texture, something funny on the street. Photograph five things that catch your eye." },
+      { emoji: "🎤", title: "Sing Along to Your Favorite Songs", desc: "Make a playlist of songs you know every word to and sing — in the car, the shower, your kitchen. Loud. Unselfconsciously." },
+      { emoji: "🏖️", title: "Change Your Scenery", desc: "Work, eat, or relax somewhere different from usual — a café, a park bench, a new neighborhood. New environments spark new energy." },
+      { emoji: "🛌", title: "Take a Guilt-Free Nap", desc: "If your body wants rest, give it rest. Set an alarm for 20–30 minutes and take a real nap, without guilt. Rested people are happier people." },
+      { emoji: "🤝", title: "Spend Time With Someone You Like", desc: "Make plans with someone whose company genuinely energizes you. Even a 30-minute walk — in-person connection is a proven mood booster." },
+      { emoji: "🌙", title: "Design Your Perfect Evening", desc: "Plan your ideal evening tonight: the food, the activity, the wind-down. No compromises — exactly what makes you happiest." },
+      { emoji: "🐶", title: "Spend Time With an Animal", desc: "Hang out with a pet, visit a friend's dog, or watch animal videos if that's all you've got. Animal interaction reliably lowers cortisol." },
+      { emoji: "⭐", title: "Do Absolutely Nothing", desc: "Block one hour with zero tasks, no productivity, no content. Sit with yourself. Daydream. Stare at the ceiling. It's not just allowed — it's the mission." },
+      { emoji: "🌻", title: "Plan Something to Look Forward To", desc: "Book a dinner, a trip, a concert, or even a movie night — anything future-you will be excited about. Anticipation itself boosts happiness." },
     ];
 
-    const TIPS = [
-      { emoji: "☀️", title: "Start with Gratitude", tip: "Before checking your phone in the morning, name three specific things you're grateful for. Research shows this single habit rewires your brain toward positivity over time." },
-      { emoji: "🚶", title: "Walk for 10 Minutes", tip: "A brisk 10-minute walk outside boosts mood as effectively as a cup of coffee — without the crash. Move your body to shift your mental state immediately." },
-      { emoji: "📵", title: "Delay Your Phone", tip: "Wait 30 minutes after waking before checking social media or email. This gives your brain a calm start and reduces morning anxiety significantly." },
-      { emoji: "💧", title: "Drink Water First", tip: "Drink a full glass of water before doing anything else in the morning. Even mild dehydration reduces mood, focus, and energy — hydrating first fixes all three." },
-      { emoji: "🛏️", title: "Make Your Bed", tip: "Making your bed takes 90 seconds and gives you an immediate small win. That sense of accomplishment primes your brain to follow through on bigger tasks." },
-      { emoji: "🌿", title: "Add a Plant to Your Space", tip: "Having even one houseplant in your workspace reduces stress by up to 37%. Caring for something living also builds a gentle daily sense of purpose." },
-      { emoji: "✍️", title: "Write Three Wins Per Day", tip: "At the end of each day, write down three things that went well — no matter how small. This trains your brain to notice progress instead of defaulting to what went wrong." },
-      { emoji: "🎯", title: "Set One Daily Priority", tip: "Each morning, identify the single most important thing you need to accomplish. Doing one thing well creates more satisfaction than doing five things halfway." },
-      { emoji: "🧠", title: "Take a 5-Minute Break Hourly", tip: "Working in focused sprints with short breaks outperforms grinding for hours. Step away from your screen for 5 minutes every hour — your output will actually increase." },
-      { emoji: "🎵", title: "Use Music Intentionally", tip: "Play upbeat music while doing chores or commuting. Studies show music with a tempo of 120–140 BPM directly elevates mood within minutes." },
-      { emoji: "🌅", title: "Get Morning Light", tip: "Spend 5–10 minutes in natural light within an hour of waking. This sets your circadian rhythm, boosts serotonin, and makes it easier to fall asleep at night." },
-      { emoji: "🤝", title: "Invest in One Relationship Weekly", tip: "Strong social connections are the #1 predictor of long-term happiness — above wealth, health, or achievement. Schedule one genuine social interaction each week." },
-      { emoji: "😤", title: "Name Your Emotion", tip: "When you feel bad, say the emotion out loud or write it down. Naming an emotion reduces its intensity by activating the logical brain — this is called 'affect labeling.'" },
-      { emoji: "📖", title: "Read Fiction", tip: "Reading fiction for just 6 minutes reduces stress by 68% — more than music or a walk. It also builds empathy and gives your brain a genuine mental vacation." },
-      { emoji: "🧘", title: "Try Box Breathing", tip: "Inhale for 4 counts, hold for 4, exhale for 4, hold for 4. Repeat four times. This activates your parasympathetic nervous system and reliably calms anxiety in under 2 minutes." },
-      { emoji: "🍽️", title: "Eat One Meal Slowly", tip: "Pick one meal today and eat it without your phone or TV. Chew deliberately, taste the food. Mindful eating reduces stress, improves digestion, and increases satisfaction." },
-      { emoji: "💪", title: "Use the 2-Minute Rule", tip: "If a task takes less than two minutes, do it immediately instead of adding it to a list. Clearing small tasks prevents mental clutter that quietly drains your energy." },
-      { emoji: "🌙", title: "Wind Down Before Bed", tip: "Stop using screens 30 minutes before sleep and dim your lights. Blue light suppresses melatonin. A simple wind-down routine improves sleep quality dramatically." },
-      { emoji: "🗣️", title: "Say No to One Thing", tip: "Every 'no' to something unimportant is a 'yes' to something meaningful. Practice declining one low-value commitment this week without over-explaining yourself." },
-      { emoji: "🔋", title: "Protect Your Peak Hours", tip: "Identify the two or three hours when your energy and focus are highest. Guard those hours for your most important work and watch your output — and mood — improve." },
-      { emoji: "🎨", title: "Do Something Creative Daily", tip: "Drawing, cooking, journaling, building — any creative activity reduces cortisol and activates the brain's reward center. Even 10 minutes counts." },
-      { emoji: "🪞", title: "Stop Comparing to Others' Highlights", tip: "Social media shows curated highlights, not real life. Unfollow any account that consistently makes you feel inadequate. Your feed should inspire you, not drain you." },
-      { emoji: "🏆", title: "Celebrate Small Wins", tip: "Your brain releases dopamine when you acknowledge progress — even tiny progress. Celebrate finishing a draft, completing a workout, or making a healthy meal." },
-      { emoji: "🌬️", title: "Go Outside for 10 Minutes", tip: "Exposure to natural environments lowers cortisol, reduces anxiety, and improves mood. You don't need a park — a neighborhood walk or a bench outside works perfectly." },
-      { emoji: "🤲", title: "Give Without Expecting Return", tip: "Altruistic giving activates the brain's pleasure centers more than receiving. Doing something kind with zero expectation of reciprocity is one of the fastest ways to feel good." },
-      { emoji: "⏳", title: "Stop Multitasking", tip: "Multitasking reduces efficiency by up to 40% and increases stress. Work on one thing at a time — close extra tabs, silence notifications, finish the task." },
-      { emoji: "📅", title: "Plan Something to Look Forward To", tip: "Having a future event to anticipate — a dinner, a trip, a movie — boosts current happiness even before the event happens. Schedule something small this week." },
-      { emoji: "🧹", title: "Declutter One Surface", tip: "Physical clutter creates mental clutter. Pick one surface — a desk, a counter, a drawer — and clear it completely. The resulting mental clarity is immediate and real." },
-      { emoji: "❤️", title: "Tell Someone You Love Them", tip: "Saying 'I love you' or 'I appreciate you' out loud strengthens your bond and boosts your own mood. Don't assume people know — say it explicitly today." },
-      { emoji: "🌟", title: "Review Your Values", tip: "Once a month, ask: 'Did my actions this week reflect what I actually care about?' Living in alignment with your values — not others' expectations — is the root of lasting happiness." },
-    ];
 
     // ── STATE ────────────────────────────────────────────
     function getTodayKey() {
@@ -457,7 +384,6 @@
     // ── RENDER TODAY ─────────────────────────────────────
     function render() {
       const mission = MISSIONS[getDayIndex() % MISSIONS.length];
-      const tip = TIPS[getDayIndex() % TIPS.length];
       const state = loadState();
       const dayIdx = getDayIndex();
       const today = new Date();
@@ -471,9 +397,6 @@
       document.getElementById('mission-badge').textContent = `Mission #${missionNum}`;
       document.getElementById('streak-count').textContent = state.streak;
       document.getElementById('today-date').textContent = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-
-      document.getElementById('tip-title').textContent = `${tip.emoji} ${tip.title}`;
-      document.getElementById('tip-text').textContent = tip.tip;
 
       const btn = document.getElementById('accomplish-btn');
       if (state.completedToday) {
@@ -516,27 +439,6 @@
       `).join('');
     }
 
-    // ── RENDER TIPS ARCHIVE ───────────────────────────────
-    function renderTips() {
-      const list = document.getElementById('tips-list');
-      const todayIdx = getDayIndex();
-      const revealed = [];
-      for (let i = 0; i <= todayIdx % TIPS.length; i++) {
-        revealed.push({ ...TIPS[i], index: i });
-      }
-      revealed.reverse();
-
-      list.innerHTML = revealed.map(t => `
-        <div class="history-item">
-          <div class="history-emoji">${t.emoji}</div>
-          <div class="history-body">
-            <div class="history-title">${t.title}</div>
-            <div class="history-desc">${t.tip}</div>
-          </div>
-        </div>
-      `).join('');
-    }
-
     // ── NAV ───────────────────────────────────────────────
     function showPage(name) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -544,7 +446,6 @@
       document.getElementById('page-' + name).classList.add('active');
       document.getElementById('nav-' + name).classList.add('active');
       if (name === 'missions') renderMissions();
-      if (name === 'tips') renderTips();
     }
 
     // ── UTILS ─────────────────────────────────────────────
