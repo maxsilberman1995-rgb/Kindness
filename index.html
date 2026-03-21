@@ -235,6 +235,40 @@
       margin-top: 60px;
     }
 
+    /* ── BASEBALL BACKGROUND ── */
+    .baseball-bg {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bb {
+      position: absolute;
+      opacity: 0.13;
+    }
+
+    .bb svg { display: block; }
+
+    .bb1  { width: 140px; top: -30px;  left: -40px;  animation: bbdrift 22s ease-in-out infinite; }
+    .bb2  { width: 90px;  top: 8%;     right: -20px; animation: bbdrift 18s ease-in-out infinite 3s; }
+    .bb3  { width: 70px;  top: 38%;    left: -15px;  animation: bbdrift 25s ease-in-out infinite 6s; }
+    .bb4  { width: 110px; top: 55%;    right: -25px; animation: bbdrift 20s ease-in-out infinite 1s; }
+    .bb5  { width: 60px;  bottom: 80px; left: 10%;   animation: bbdrift 16s ease-in-out infinite 9s; }
+    .bb6  { width: 85px;  bottom: -20px; right: 15%; animation: bbdrift 24s ease-in-out infinite 4s; }
+    .bb7  { width: 50px;  top: 72%;    left: 45%;    animation: bbdrift 19s ease-in-out infinite 7s; }
+
+    @keyframes bbdrift {
+      0%,  100% { transform: translateY(0)    rotate(0deg); }
+      33%        { transform: translateY(18px) rotate(12deg); }
+      66%        { transform: translateY(-10px) rotate(-8deg); }
+    }
+
+    nav, .page { position: relative; z-index: 1; }
+    nav { z-index: 10; }
+
     /* ── CONFETTI ── */
     #confetti-canvas {
       position: fixed; top: 0; left: 0;
@@ -245,6 +279,17 @@
 </head>
 <body>
   <canvas id="confetti-canvas"></canvas>
+
+  <!-- Baseball background decoration -->
+  <div class="baseball-bg" aria-hidden="true">
+    <div class="bb bb1"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="47" fill="white" stroke="#ddd" stroke-width="1.5"/><path d="M35,12 C18,28 18,72 35,88" fill="none" stroke="#cc2200" stroke-width="2.5" stroke-linecap="round"/><path d="M65,12 C82,28 82,72 65,88" fill="none" stroke="#cc2200" stroke-width="2.5" stroke-linecap="round"/><line x1="33" y1="24" x2="22" y2="20" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="36" x2="19" y2="36" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="28" y1="50" x2="17" y2="50" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="64" x2="19" y2="64" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="33" y1="76" x2="22" y2="80" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="67" y1="24" x2="78" y2="20" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="70" y1="36" x2="81" y2="36" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="72" y1="50" x2="83" y2="50" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="70" y1="64" x2="81" y2="64" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="67" y1="76" x2="78" y2="80" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <div class="bb bb2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="47" fill="white" stroke="#ddd" stroke-width="1.5"/><path d="M35,12 C18,28 18,72 35,88" fill="none" stroke="#cc2200" stroke-width="2.5" stroke-linecap="round"/><path d="M65,12 C82,28 82,72 65,88" fill="none" stroke="#cc2200" stroke-width="2.5" stroke-linecap="round"/><line x1="33" y1="24" x2="22" y2="20" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="36" x2="19" y2="36" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="28" y1="50" x2="17" y2="50" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="64" x2="19" y2="64" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="33" y1="76" x2="22" y2="80" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="67" y1="24" x2="78" y2="20" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="70" y1="36" x2="81" y2="36" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="72" y1="50" x2="83" y2="50" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="70" y1="64" x2="81" y2="64" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="67" y1="76" x2="78" y2="80" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <div class="bb bb3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="47" fill="white" stroke="#ddd" stroke-width="1.5"/><path d="M35,12 C18,28 18,72 35,88" fill="none" stroke="#cc2200" stroke-width="2.5" stroke-linecap="round"/><path d="M65,12 C82,28 82,72 65,88" fill="none" stroke="#cc2200" stroke-width="2.5" stroke-linecap="round"/><line x1="33" y1="24" x2="22" y2="20" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="36" x2="19" y2="36" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="28" y1="50" x2="17" y2="50" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="64" x2="19" y2="64" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="33" y1="76" x2="22" y2="80" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="67" y1="24" x2="78" y2="20" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="70" y1="36" x2="81" y2="36" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="72" y1="50" x2="83" y2="50" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="70" y1="64" x2="81" y2="64" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="67" y1="76" x2="78" y2="80" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <div class="bb bb4"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="47" fill="white" stroke="#ddd" stroke-width="1.5"/><path d="M35,12 C18,28 18,72 35,88" fill="none" stroke="#cc2200" stroke-width="2.5" stroke-linecap="round"/><path d="M65,12 C82,28 82,72 65,88" fill="none" stroke="#cc2200" stroke-width="2.5" stroke-linecap="round"/><line x1="33" y1="24" x2="22" y2="20" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="36" x2="19" y2="36" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="28" y1="50" x2="17" y2="50" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="64" x2="19" y2="64" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="33" y1="76" x2="22" y2="80" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="67" y1="24" x2="78" y2="20" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="70" y1="36" x2="81" y2="36" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="72" y1="50" x2="83" y2="50" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="70" y1="64" x2="81" y2="64" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="67" y1="76" x2="78" y2="80" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <div class="bb bb5"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="47" fill="white" stroke="#ddd" stroke-width="1.5"/><path d="M35,12 C18,28 18,72 35,88" fill="none" stroke="#cc2200" stroke-width="2.5" stroke-linecap="round"/><path d="M65,12 C82,28 82,72 65,88" fill="none" stroke="#cc2200" stroke-width="2.5" stroke-linecap="round"/><line x1="33" y1="24" x2="22" y2="20" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="36" x2="19" y2="36" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="28" y1="50" x2="17" y2="50" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="64" x2="19" y2="64" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="33" y1="76" x2="22" y2="80" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="67" y1="24" x2="78" y2="20" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="70" y1="36" x2="81" y2="36" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="72" y1="50" x2="83" y2="50" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="70" y1="64" x2="81" y2="64" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="67" y1="76" x2="78" y2="80" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <div class="bb bb6"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="47" fill="white" stroke="#ddd" stroke-width="1.5"/><path d="M35,12 C18,28 18,72 35,88" fill="none" stroke="#cc2200" stroke-width="2.5" stroke-linecap="round"/><path d="M65,12 C82,28 82,72 65,88" fill="none" stroke="#cc2200" stroke-width="2.5" stroke-linecap="round"/><line x1="33" y1="24" x2="22" y2="20" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="36" x2="19" y2="36" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="28" y1="50" x2="17" y2="50" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="64" x2="19" y2="64" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="33" y1="76" x2="22" y2="80" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="67" y1="24" x2="78" y2="20" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="70" y1="36" x2="81" y2="36" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="72" y1="50" x2="83" y2="50" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="70" y1="64" x2="81" y2="64" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="67" y1="76" x2="78" y2="80" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <div class="bb bb7"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="47" fill="white" stroke="#ddd" stroke-width="1.5"/><path d="M35,12 C18,28 18,72 35,88" fill="none" stroke="#cc2200" stroke-width="2.5" stroke-linecap="round"/><path d="M65,12 C82,28 82,72 65,88" fill="none" stroke="#cc2200" stroke-width="2.5" stroke-linecap="round"/><line x1="33" y1="24" x2="22" y2="20" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="36" x2="19" y2="36" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="28" y1="50" x2="17" y2="50" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="30" y1="64" x2="19" y2="64" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="33" y1="76" x2="22" y2="80" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="67" y1="24" x2="78" y2="20" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="70" y1="36" x2="81" y2="36" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="72" y1="50" x2="83" y2="50" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="70" y1="64" x2="81" y2="64" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/><line x1="67" y1="76" x2="78" y2="80" stroke="#cc2200" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+  </div>
 
   <nav>
     <button onclick="showPage('today')" id="nav-today" class="active">Today</button>
@@ -314,7 +359,7 @@
       { emoji: "🤲", title: "Donate to a Cause", desc: "Choose one local charity, mutual aid fund, or crowdfunding campaign and make a donation — even $5 counts. Search '[your city] mutual aid fund' to start." },
       { emoji: "🚶", title: "Let Someone Go First", desc: "Intentionally yield three times today — in traffic, in line, in a doorway — without expecting acknowledgment. Notice how it feels." },
       { emoji: "📚", title: "Teach Someone a Skill", desc: "Share one practical skill you know with someone who could use it today — a keyboard shortcut, a recipe, a budgeting trick, a repair tip." },
-      { emoji: "🌈", title: "Celebrate Someone's Win", desc: "Text three people 'What's the best thing that happened to you this week?' When they respond, celebrate their answer with at least two enthusiastic sentences." },
+      { emoji: "🌈", title: "Celebrate Someone's Win", desc: "Text one person 'What's the best thing that happened to you this week?' When they respond, celebrate their answer with at least two enthusiastic sentences." },
       { emoji: "💬", title: "Check In on a Friend", desc: "Message one friend with 'Hey — genuinely asking, how are you doing lately?' Wait for their real answer before shifting to yourself." },
       { emoji: "🕯️", title: "Encourage Someone's Goal", desc: "Find someone working toward a goal and give them one concrete, specific reason you believe they'll succeed. Reference something you've actually seen them do." },
       { emoji: "🧃", title: "Bring Refreshments to a Group", desc: "Show up to your next meeting, class, or gathering with drinks or a snack for everyone. Text ahead to ask if anyone has allergies." },
@@ -416,10 +461,13 @@
       const dayIdx = getDayIndex();
       const today = new Date();
 
+      const history = JSON.parse(localStorage.getItem('kindness_history') || '[]');
+      const missionNum = state.completedToday ? history.length : history.length + 1;
+
       document.getElementById('mission-emoji').textContent = mission.emoji;
       document.getElementById('mission-title').textContent = mission.title;
       document.getElementById('mission-desc').textContent = mission.desc;
-      document.getElementById('mission-badge').textContent = `Mission #${(dayIdx % MISSIONS.length) + 1}`;
+      document.getElementById('mission-badge').textContent = `Mission #${missionNum}`;
       document.getElementById('streak-count').textContent = state.streak;
       document.getElementById('today-date').textContent = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
 
