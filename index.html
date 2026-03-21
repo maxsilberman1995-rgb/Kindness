@@ -283,6 +283,58 @@
       color: #a0713a;
     }
 
+    /* ── PRIVACY PAGE ── */
+    .privacy-section {
+      background: white;
+      border-radius: 20px;
+      padding: 24px 26px;
+      margin-bottom: 16px;
+      box-shadow: 0 4px 16px rgba(200,140,40,0.08);
+    }
+    .privacy-section h2 {
+      font-size: 14px;
+      font-weight: 800;
+      color: #f9a825;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+    }
+    .privacy-section p, .privacy-section li {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.8;
+    }
+    .privacy-section ul {
+      padding-left: 18px;
+      margin-top: 6px;
+    }
+    .privacy-section li { margin-bottom: 4px; }
+    .privacy-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .privacy-header h1 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #4e3400;
+      margin-bottom: 6px;
+    }
+    .privacy-header p {
+      font-size: 12px;
+      color: #bbb;
+    }
+    .privacy-badge {
+      display: inline-block;
+      background: #fff9c4;
+      color: #f57f17;
+      border: 1.5px solid #ffe082;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
     /* ── BASEBALL BACKGROUND ── */
     .baseball-bg {
       position: fixed;
@@ -345,6 +397,7 @@
     <button onclick="showPage('journal')" id="nav-journal">Journal</button>
     <button onclick="showPage('insights')" id="nav-insights">Insights</button>
     <button onclick="showPage('missions')" id="nav-missions">History</button>
+    <button onclick="showPage('privacy')" id="nav-privacy">Privacy</button>
   </nav>
 
   <!-- ── TODAY ── -->
@@ -389,6 +442,81 @@
   <div class="page" id="page-missions">
     <div class="page-title">📋 Completed Missions</div>
     <div id="missions-list"></div>
+  </div>
+
+  <!-- ── PRIVACY ── -->
+  <div class="page" id="page-privacy">
+    <div class="privacy-header">
+      <h1>Privacy Policy</h1>
+      <div class="privacy-badge">WHOOP API Compliant</div>
+      <p>Last updated: March 2025</p>
+    </div>
+
+    <div class="privacy-section">
+      <h2>Overview</h2>
+      <p>Daily Happiness Mission ("the App") is a personal wellness app that may connect to your WHOOP account to personalize your daily missions using your recovery and readiness data. We take your privacy seriously and handle your data with care.</p>
+    </div>
+
+    <div class="privacy-section">
+      <h2>Data We Collect</h2>
+      <p>When you connect your WHOOP account, the App may access the following data via the WHOOP API:</p>
+      <ul>
+        <li>Recovery score and recovery state</li>
+        <li>Sleep performance and sleep duration</li>
+        <li>Daily strain score</li>
+        <li>Heart rate variability (HRV)</li>
+        <li>Resting heart rate</li>
+        <li>Respiratory rate</li>
+      </ul>
+      <p style="margin-top:10px;">The App also stores locally on your device: completed mission history, journal entries, mood scores, and streak data. This data never leaves your device.</p>
+    </div>
+
+    <div class="privacy-section">
+      <h2>How We Use Your Data</h2>
+      <p>WHOOP data is used solely to:</p>
+      <ul>
+        <li>Personalize daily mission suggestions based on your recovery state</li>
+        <li>Show relevant wellness insights within the App</li>
+      </ul>
+      <p style="margin-top:10px;">We do not use your data for advertising, profiling, or any purpose beyond improving your experience in this App.</p>
+    </div>
+
+    <div class="privacy-section">
+      <h2>Data Sharing</h2>
+      <p>We do not sell, rent, or share your personal data or WHOOP health data with any third parties. Your data is never transferred outside this App except as required by law.</p>
+    </div>
+
+    <div class="privacy-section">
+      <h2>Data Security</h2>
+      <p>We implement industry-standard safeguards to protect your information:</p>
+      <ul>
+        <li>All communication with the WHOOP API occurs over HTTPS (encrypted in transit)</li>
+        <li>Any stored credentials use secure token storage</li>
+        <li>Your journal and mission data is stored only on your local device</li>
+        <li>We promptly notify you of any unauthorized access to your data as required by law</li>
+      </ul>
+    </div>
+
+    <div class="privacy-section">
+      <h2>Your Rights & Revoking Access</h2>
+      <p>You can disconnect your WHOOP account at any time. Revoking access will immediately stop the App from reading any new WHOOP data. You can also revoke access directly from your WHOOP account settings under Connected Apps.</p>
+      <p style="margin-top:10px;">Depending on your location, you may have rights to access, correct, or delete your data under applicable privacy laws including CCPA (California) and GDPR (EU/UK).</p>
+    </div>
+
+    <div class="privacy-section">
+      <h2>Children's Privacy</h2>
+      <p>This App is not directed at children under 13. We do not knowingly collect personal information from children.</p>
+    </div>
+
+    <div class="privacy-section">
+      <h2>Changes to This Policy</h2>
+      <p>We may update this policy as the App evolves. Material changes will be surfaced in-app. Continued use of the App after changes constitutes acceptance of the updated policy.</p>
+    </div>
+
+    <div class="privacy-section">
+      <h2>Contact</h2>
+      <p>Questions about this privacy policy? Reach out via the app's support channel or the contact information provided on the platform where you downloaded this app.</p>
+    </div>
   </div>
 
 
