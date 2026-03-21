@@ -253,6 +253,36 @@
     .insight-diff.neg { color: #e53935; }
     .insights-footer { text-align: center; color: #ccc; font-size: 12px; margin-top: 8px; padding-bottom: 8px; }
 
+    /* ── QUOTE CARD ── */
+    .quote-card {
+      background: white;
+      border-radius: 24px;
+      padding: 28px 32px;
+      box-shadow: 0 12px 40px rgba(200, 140, 40, 0.12);
+      margin-bottom: 20px;
+      border-left: 4px solid #ffca28;
+    }
+    .quote-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #f9a825;
+      margin-bottom: 14px;
+    }
+    .quote-text {
+      font-size: 16px;
+      color: #2a2a2a;
+      line-height: 1.7;
+      font-style: italic;
+      margin-bottom: 12px;
+    }
+    .quote-author {
+      font-size: 13px;
+      font-weight: 700;
+      color: #a0713a;
+    }
+
     /* ── BASEBALL BACKGROUND ── */
     .baseball-bg {
       position: fixed;
@@ -319,6 +349,11 @@
 
   <!-- ── TODAY ── -->
   <div class="page active" id="page-today">
+    <div class="quote-card">
+      <div class="quote-label">Today's Thought</div>
+      <p class="quote-text" id="quote-text"></p>
+      <div class="quote-author" id="quote-author"></div>
+    </div>
     <div class="card">
       <span class="emoji-big" id="mission-emoji">💛</span>
       <div class="label">Today's Happiness Mission</div>
@@ -393,6 +428,40 @@
     ];
 
 
+    // ── QUOTES ───────────────────────────────────────────
+    const QUOTES = [
+      { text: "Happiness is the meaning and the purpose of life, the whole aim and end of human existence.", author: "Aristotle" },
+      { text: "The secret of happiness is freedom, and the secret of freedom is courage.", author: "Thucydides" },
+      { text: "He is a wise man who does not grieve for the things which he has not, but rejoices for those which he has.", author: "Epictetus" },
+      { text: "Very little is needed to make a happy life; it is all within yourself, in your way of thinking.", author: "Marcus Aurelius" },
+      { text: "The happiness of your life depends upon the quality of your thoughts.", author: "Marcus Aurelius" },
+      { text: "Do not spoil what you have by desiring what you have not; remember that what you now have was once among the things you only hoped for.", author: "Epicurus" },
+      { text: "Man is fond of counting his troubles, but he does not count his joys. If he counted them up as he ought to, he would see that every lot has enough happiness provided for it.", author: "Fyodor Dostoevsky" },
+      { text: "The most important thing is to enjoy your life — to be happy — it's all that matters.", author: "Audrey Hepburn" },
+      { text: "Happiness is not something ready made. It comes from your own actions.", author: "Dalai Lama XIV" },
+      { text: "We don't laugh because we're happy — we're happy because we laugh.", author: "William James" },
+      { text: "The good life is one inspired by love and guided by knowledge.", author: "Bertrand Russell" },
+      { text: "Joy is the simplest form of gratitude.", author: "Karl Barth" },
+      { text: "It is not how much we have, but how much we enjoy, that makes happiness.", author: "Charles Spurgeon" },
+      { text: "Happiness is when what you think, what you say, and what you do are in harmony.", author: "Mahatma Gandhi" },
+      { text: "There is only one way to happiness and that is to cease worrying about things which are beyond the power of our will.", author: "Epictetus" },
+      { text: "You will never be happy if you continue to search for what happiness consists of. You will never live if you are looking for the meaning of life.", author: "Albert Camus" },
+      { text: "To be without some of the things you want is an indispensable part of happiness.", author: "Bertrand Russell" },
+      { text: "The greatest wealth is a poverty of desires.", author: "Seneca" },
+      { text: "Pleasure in the job puts perfection in the work.", author: "Aristotle" },
+      { text: "The purpose of life is to be happy and to make others happy by good actions.", author: "Confucius" },
+      { text: "A calm and modest life brings more happiness than the pursuit of success combined with constant restlessness.", author: "Albert Einstein" },
+      { text: "For every minute you are angry you lose sixty seconds of happiness.", author: "Ralph Waldo Emerson" },
+      { text: "The present moment always will have been.", author: "Epictetus" },
+      { text: "It is not in the pursuit of happiness that we find fulfillment, it is in the happiness of pursuit.", author: "Denis Waitley" },
+      { text: "Real generosity toward the future lies in giving all to the present.", author: "Albert Camus" },
+      { text: "Most people are about as happy as they make up their minds to be.", author: "Abraham Lincoln" },
+      { text: "The world is full of people looking for spectacular happiness while they snub contentment.", author: "Doug Larson" },
+      { text: "Learn to be pleased with everything; with wealth, so far as it makes us beneficial to others; with poverty, for not having much to care for.", author: "Epictetus" },
+      { text: "One must want only one thing and want it constantly.", author: "André Gide" },
+      { text: "Happiness is not a state to arrive at, but a manner of traveling.", author: "Margaret Lee Runbeck" },
+    ];
+
     // ── STATE ────────────────────────────────────────────
     function getTodayKey() {
       const d = new Date();
@@ -450,6 +519,10 @@
 
       const history = JSON.parse(localStorage.getItem('happiness_history') || '[]');
       const missionNum = state.completedToday ? history.length : history.length + 1;
+
+      const quote = QUOTES[dayIdx % QUOTES.length];
+      document.getElementById('quote-text').textContent = `"${quote.text}"`;
+      document.getElementById('quote-author').textContent = `— ${quote.author}`;
 
       document.getElementById('mission-emoji').textContent = mission.emoji;
       document.getElementById('mission-title').textContent = mission.title;
