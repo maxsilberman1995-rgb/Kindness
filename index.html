@@ -205,6 +205,54 @@
       margin-top: 60px;
     }
 
+    /* ── JOURNAL ── */
+    .q-block { margin-bottom: 22px; }
+    .q-label { font-size: 14px; font-weight: 700; color: #1a1a2e; margin-bottom: 10px; }
+    .q-sub   { font-size: 12px; color: #aaa; margin-bottom: 10px; }
+    .pill-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill {
+      padding: 8px 18px; border-radius: 50px;
+      border: 2px solid #ffe082; background: white;
+      font-size: 14px; font-weight: 600; color: #a0713a;
+      cursor: pointer; transition: all 0.12s;
+    }
+    .pill.selected { background: #ffca28; border-color: #ffca28; color: #3e2400; }
+    .score-grid { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+    .score-btn {
+      width: 46px; height: 46px; border-radius: 12px;
+      border: 2px solid #ffe082; background: white;
+      font-size: 16px; font-weight: 700; color: #a0713a;
+      cursor: pointer; transition: all 0.12s;
+    }
+    .score-btn.selected { background: #ff8f00; border-color: #ff8f00; color: white; }
+    .journal-done { text-align: center; padding: 12px 0; }
+    .journal-done .big { font-size: 52px; margin-bottom: 12px; }
+
+    /* ── INSIGHTS ── */
+    .top-insight {
+      background: linear-gradient(135deg, #fff9c4, #fffde7);
+      border: 2px solid #ffe082; border-radius: 20px;
+      padding: 20px 24px; margin-bottom: 20px; text-align: center;
+    }
+    .top-insight-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #f9a825; margin-bottom: 8px; }
+    .top-insight-text  { font-size: 15px; font-weight: 600; color: #1a1a2e; line-height: 1.6; }
+    .insight-card {
+      background: white; border-radius: 16px; padding: 18px 20px;
+      margin-bottom: 12px; box-shadow: 0 4px 16px rgba(200,140,40,0.08);
+    }
+    .insight-q { font-size: 11px; font-weight: 700; color: #bbb; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; }
+    .insight-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .insight-row:last-child { margin-bottom: 0; }
+    .insight-lbl  { font-size: 13px; font-weight: 600; color: #555; width: 90px; flex-shrink: 0; }
+    .insight-bar-wrap { flex: 1; background: #f5f5f5; border-radius: 50px; height: 10px; overflow: hidden; }
+    .insight-bar  { height: 100%; border-radius: 50px; background: #ffca28; transition: width 0.5s ease; }
+    .insight-bar.best { background: #66bb6a; }
+    .insight-num  { font-size: 14px; font-weight: 800; color: #1a1a2e; width: 30px; text-align: right; flex-shrink: 0; }
+    .insight-diff { font-size: 12px; font-weight: 700; width: 36px; flex-shrink: 0; }
+    .insight-diff.pos { color: #43a047; }
+    .insight-diff.neg { color: #e53935; }
+    .insights-footer { text-align: center; color: #ccc; font-size: 12px; margin-top: 8px; padding-bottom: 8px; }
+
     /* ── BASEBALL BACKGROUND ── */
     .baseball-bg {
       position: fixed;
@@ -264,7 +312,9 @@
 
   <nav>
     <button onclick="showPage('today')" id="nav-today" class="active">Today</button>
-    <button onclick="showPage('missions')" id="nav-missions">Past Missions</button>
+    <button onclick="showPage('journal')" id="nav-journal">Journal</button>
+    <button onclick="showPage('insights')" id="nav-insights">Insights</button>
+    <button onclick="showPage('missions')" id="nav-missions">History</button>
   </nav>
 
   <!-- ── TODAY ── -->
@@ -290,7 +340,17 @@
 
   </div>
 
-  <!-- ── PAST MISSIONS ── -->
+  <!-- ── JOURNAL ── -->
+  <div class="page" id="page-journal">
+    <div id="journal-content"></div>
+  </div>
+
+  <!-- ── INSIGHTS ── -->
+  <div class="page" id="page-insights">
+    <div id="insights-content"></div>
+  </div>
+
+  <!-- ── HISTORY ── -->
   <div class="page" id="page-missions">
     <div class="page-title">📋 Completed Missions</div>
     <div id="missions-list"></div>
@@ -439,6 +499,190 @@
       `).join('');
     }
 
+    // ── JOURNAL ───────────────────────────────────────────
+    const JOURNAL_QS = [
+      { id: 'sleep',       label: 'How much did you sleep last night?',                  type: 'choice', options: [{ v:'<6', l:'< 6 hrs' },{ v:'6-7', l:'6–7 hrs' },{ v:'7-8', l:'7–8 hrs' },{ v:'8+', l:'8+ hrs' }] },
+      { id: 'exercise',    label: 'Did you exercise today?',                              type: 'bool' },
+      { id: 'outdoors',    label: 'Did you spend time outdoors?',                         type: 'bool' },
+      { id: 'social',      label: 'Did you have quality time with people you enjoy?',     type: 'bool' },
+      { id: 'stress',      label: 'How was your stress level?',                           type: 'choice', options: [{ v:'low', l:'Low' },{ v:'medium', l:'Medium' },{ v:'high', l:'High' }] },
+      { id: 'creative',    label: 'Did you do something creative or playful?',            type: 'bool' },
+      { id: 'ate_well',    label: 'Did you eat well today?',                              type: 'bool' },
+      { id: 'screen',      label: 'How much social media / passive screen time?',         type: 'choice', options: [{ v:'low', l:'Minimal' },{ v:'medium', l:'Some' },{ v:'high', l:'A lot' }] },
+      { id: 'accomplished',label: 'Did you accomplish something meaningful?',             type: 'bool' },
+      { id: 'present',     label: 'How present / mindful did you feel today?',            type: 'choice', options: [{ v:'distracted', l:'Distracted' },{ v:'somewhat', l:'Somewhat' },{ v:'fully', l:'Fully present' }] },
+    ];
+
+    let journalDraft = {};
+
+    function renderJournal() {
+      const today = getTodayKey();
+      const entries = JSON.parse(localStorage.getItem('happiness_journal') || '[]');
+      const existing = entries.find(e => e.date === today);
+      const el = document.getElementById('journal-content');
+
+      if (existing) {
+        el.innerHTML = `
+          <div class="page-title">📔 Today's Journal</div>
+          <div class="card journal-done">
+            <div class="big">✅</div>
+            <h1>Entry saved!</h1>
+            <p class="description">Happiness score: <strong style="color:#ff8f00;font-size:22px">${existing.score}/10</strong></p>
+            <p class="description" style="margin-bottom:0">Head to <strong>Insights</strong> to see what's driving your happiness.</p>
+          </div>`;
+        return;
+      }
+
+      journalDraft = {};
+      const qsHtml = JOURNAL_QS.map(q => {
+        const opts = q.type === 'bool' ? [{ v:'yes', l:'Yes' }, { v:'no', l:'No' }] : q.options;
+        return `<div class="q-block">
+          <div class="q-label">${q.label}</div>
+          <div class="pill-group">${opts.map(o =>
+            `<button class="pill" onclick="pickPill(this,'${q.id}','${o.v}')">${o.l}</button>`
+          ).join('')}</div>
+        </div>`;
+      }).join('');
+
+      const scoreHtml = Array.from({length:10}, (_,i) =>
+        `<button class="score-btn" onclick="pickScore(this,${i+1})">${i+1}</button>`
+      ).join('');
+
+      el.innerHTML = `
+        <div class="page-title">📔 Today's Journal</div>
+        <div class="card">
+          ${qsHtml}
+          <div class="q-block">
+            <div class="q-label">Rate your overall happiness today</div>
+            <div class="q-sub">1 = rough day &nbsp;·&nbsp; 10 = best day ever</div>
+            <div class="score-grid">${scoreHtml}</div>
+          </div>
+        </div>
+        <button class="btn" onclick="saveJournal()" style="max-width:520px;margin:0 auto;display:flex">
+          <span>💾</span> Save Entry
+        </button>`;
+    }
+
+    function pickPill(el, qId, val) {
+      el.closest('.pill-group').querySelectorAll('.pill').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+      journalDraft[qId] = val;
+    }
+
+    function pickScore(el, score) {
+      document.querySelectorAll('.score-btn').forEach(b => b.classList.remove('selected'));
+      el.classList.add('selected');
+      journalDraft._score = score;
+    }
+
+    function saveJournal() {
+      const missing = JOURNAL_QS.filter(q => !journalDraft[q.id]).map(q => q.label);
+      if (missing.length || !journalDraft._score) {
+        alert('Please answer all questions and pick a happiness score before saving.');
+        return;
+      }
+      const entry = { date: getTodayKey(), score: journalDraft._score };
+      JOURNAL_QS.forEach(q => { entry[q.id] = journalDraft[q.id]; });
+      const entries = JSON.parse(localStorage.getItem('happiness_journal') || '[]');
+      const idx = entries.findIndex(e => e.date === entry.date);
+      if (idx >= 0) entries[idx] = entry; else entries.unshift(entry);
+      localStorage.setItem('happiness_journal', JSON.stringify(entries));
+      renderJournal();
+    }
+
+    // ── INSIGHTS ──────────────────────────────────────────
+    const INSIGHT_DEFS = [
+      { id:'exercise',    label:'Exercise',            type:'bool' },
+      { id:'outdoors',    label:'Time outdoors',       type:'bool' },
+      { id:'social',      label:'Quality social time', type:'bool' },
+      { id:'creative',    label:'Creative activity',   type:'bool' },
+      { id:'ate_well',    label:'Eating well',         type:'bool' },
+      { id:'accomplished',label:'Felt accomplished',   type:'bool' },
+      { id:'sleep',  label:'Sleep',        type:'choice', order:['<6','6-7','7-8','8+'],         labels:{'<6':'< 6h','6-7':'6–7h','7-8':'7–8h','8+':'8+h'} },
+      { id:'stress', label:'Stress level', type:'choice', order:['low','medium','high'],         labels:{low:'Low',medium:'Med',high:'High'} },
+      { id:'screen', label:'Screen time',  type:'choice', order:['low','medium','high'],         labels:{low:'Minimal',medium:'Some',high:'A lot'} },
+      { id:'present',label:'Presence',     type:'choice', order:['distracted','somewhat','fully'],labels:{distracted:'Distracted',somewhat:'Somewhat',fully:'Fully'} },
+    ];
+
+    function avg(arr) { return arr.length ? arr.reduce((s,v)=>s+v,0)/arr.length : null; }
+
+    function renderInsights() {
+      const entries = JSON.parse(localStorage.getItem('happiness_journal') || '[]');
+      const el = document.getElementById('insights-content');
+      el.innerHTML = '<div class="page-title">📊 What Makes You Happy</div>';
+
+      if (entries.length < 3) {
+        el.innerHTML += `<div class="card journal-done">
+          <div class="big">📈</div>
+          <h1>Not enough data yet</h1>
+          <p class="description">Fill in your journal for at least 3 days to see what drives your happiness.</p>
+          <p class="description" style="margin-bottom:0;color:#bbb">${entries.length} of 3 entries logged.</p>
+        </div>`;
+        return;
+      }
+
+      const globalAvg = avg(entries.map(e => e.score));
+      let topDriver = null, topDelta = 0;
+
+      const cards = INSIGHT_DEFS.map(def => {
+        if (def.type === 'bool') {
+          const yes = entries.filter(e => e[def.id] === 'yes').map(e => e.score);
+          const no  = entries.filter(e => e[def.id] === 'no' ).map(e => e.score);
+          if (yes.length < 2 || no.length < 2) return '';
+          const aY = avg(yes), aN = avg(no);
+          const delta = aY - aN;
+          if (Math.abs(delta) > Math.abs(topDelta)) { topDelta = delta; topDriver = { def, aY, aN, delta }; }
+          const mx = Math.max(aY, aN, 10);
+          return `<div class="insight-card">
+            <div class="insight-q">${def.label}</div>
+            <div class="insight-row">
+              <div class="insight-lbl">Yes</div>
+              <div class="insight-bar-wrap"><div class="insight-bar ${aY >= aN ? 'best':''}" style="width:${(aY/mx*100).toFixed(1)}%"></div></div>
+              <div class="insight-num">${aY.toFixed(1)}</div>
+              <div class="insight-diff ${delta>0?'pos':'neg'}">${delta>0?'+'+delta.toFixed(1):delta.toFixed(1)}</div>
+            </div>
+            <div class="insight-row">
+              <div class="insight-lbl">No</div>
+              <div class="insight-bar-wrap"><div class="insight-bar ${aN > aY ? 'best':''}" style="width:${(aN/mx*100).toFixed(1)}%"></div></div>
+              <div class="insight-num">${aN.toFixed(1)}</div>
+              <div class="insight-diff ${delta<0?'pos':'neg'}">${delta<0?'+'+(-delta).toFixed(1):(-delta).toFixed(1)}</div>
+            </div>
+          </div>`;
+        } else {
+          const rows = def.order.map(v => {
+            const scores = entries.filter(e => e[def.id] === v).map(e => e.score);
+            return scores.length ? { v, a: avg(scores), n: scores.length } : null;
+          }).filter(Boolean);
+          if (rows.length < 2) return '';
+          const mx = Math.max(...rows.map(r=>r.a), 10);
+          const best = rows.reduce((a,b) => a.a >= b.a ? a : b);
+          return `<div class="insight-card">
+            <div class="insight-q">${def.label}</div>
+            ${rows.map(r => `<div class="insight-row">
+              <div class="insight-lbl">${def.labels[r.v]}</div>
+              <div class="insight-bar-wrap"><div class="insight-bar ${r.v===best.v?'best':''}" style="width:${(r.a/mx*100).toFixed(1)}%"></div></div>
+              <div class="insight-num">${r.a.toFixed(1)}</div>
+              <div class="insight-diff"></div>
+            </div>`).join('')}
+          </div>`;
+        }
+      }).join('');
+
+      if (topDriver) {
+        const { def, aY, aN, delta } = topDriver;
+        const txt = delta > 0
+          ? `On days you did <strong>${def.label.toLowerCase()}</strong>, your happiness averaged <strong>${aY.toFixed(1)}</strong> vs <strong>${aN.toFixed(1)}</strong> on days you didn't — a <strong>+${delta.toFixed(1)} pt boost</strong>.`
+          : `You actually score higher on days without <strong>${def.label.toLowerCase()}</strong> — <strong>${aN.toFixed(1)}</strong> vs <strong>${aY.toFixed(1)}</strong>. Worth reflecting on!`;
+        el.innerHTML += `<div class="top-insight">
+          <div class="top-insight-label">⭐ Your #1 Happiness Driver</div>
+          <div class="top-insight-text">${txt}</div>
+        </div>`;
+      }
+
+      el.innerHTML += cards;
+      el.innerHTML += `<div class="insights-footer">Based on ${entries.length} entries · Avg score: ${globalAvg.toFixed(1)}/10</div>`;
+    }
+
     // ── NAV ───────────────────────────────────────────────
     function showPage(name) {
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -446,6 +690,8 @@
       document.getElementById('page-' + name).classList.add('active');
       document.getElementById('nav-' + name).classList.add('active');
       if (name === 'missions') renderMissions();
+      if (name === 'journal')  renderJournal();
+      if (name === 'insights') renderInsights();
     }
 
     // ── UTILS ─────────────────────────────────────────────
