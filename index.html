@@ -632,12 +632,16 @@
   <div class="whoop-modal-overlay" id="whoop-modal-overlay">
     <div class="whoop-modal">
       <h2>Connect WHOOP</h2>
-      <p class="modal-sub">Enter your WHOOP Developer App Client ID. Stored only in your browser — no server involved.</p>
+      <p class="modal-sub">Enter your WHOOP Developer App credentials. Everything is stored only in your browser.</p>
       <div class="whoop-redirect-label">Add this Redirect URI in your WHOOP app settings</div>
       <div class="whoop-redirect-box" id="whoop-redirect-uri-display"></div>
       <div class="whoop-field">
         <label>Client ID</label>
         <input type="text" id="whoop-client-id-input" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" />
+      </div>
+      <div class="whoop-field">
+        <label>Proxy URL <span style="font-weight:400;opacity:.65;font-size:.85em">(required — <a href="https://github.com/maxsilberman1995-rgb/Kindness/blob/main/whoop-proxy/worker.js" target="_blank" rel="noopener" style="color:inherit">deploy this worker</a>)</span></label>
+        <input type="text" id="whoop-proxy-url-input" placeholder="https://whoop-proxy.YOUR-SUBDOMAIN.workers.dev" />
       </div>
       <div class="whoop-modal-btns">
         <button class="whoop-modal-cancel" onclick="closeWhoopModal()">Cancel</button>
@@ -1237,8 +1241,8 @@
 
     function openWhoopModal() {
       document.getElementById('whoop-redirect-uri-display').textContent = getRedirectUri();
-      const savedId = localStorage.getItem('whoop_client_id') || '';
-      document.getElementById('whoop-client-id-input').value = savedId;
+      document.getElementById('whoop-client-id-input').value  = localStorage.getItem('whoop_client_id')  || '';
+      document.getElementById('whoop-proxy-url-input').value  = localStorage.getItem('whoop_proxy_url')  || '';
       document.getElementById('whoop-modal-overlay').classList.add('open');
     }
 
@@ -1247,9 +1251,12 @@
     }
 
     function saveWhoopCredentials() {
-      const id  = document.getElementById('whoop-client-id-input').value.trim();
-      if (!id) { alert('Please enter your Client ID.'); return; }
-      localStorage.setItem('whoop_client_id', id);
+      const id    = document.getElementById('whoop-client-id-input').value.trim();
+      const proxy = document.getElementById('whoop-proxy-url-input').value.trim();
+      if (!id)    { alert('Please enter your Client ID.'); return; }
+      if (!proxy) { alert('Please enter a Proxy URL. See the worker.js file in the repo for setup instructions.'); return; }
+      localStorage.setItem('whoop_client_id',  id);
+      localStorage.setItem('whoop_proxy_url',  proxy);
       closeWhoopModal();
       startOAuthFlow(id);
     }
@@ -1317,16 +1324,17 @@
         return;
       }
 
-      const clientId   = localStorage.getItem('whoop_client_id');
-      const verifier   = localStorage.getItem('whoop_pkce_verifier');
+      const clientId  = localStorage.getItem('whoop_client_id');
+      const verifier  = localStorage.getItem('whoop_pkce_verifier');
+      const proxyUrl  = localStorage.getItem('whoop_proxy_url');
 
-      if (!clientId) {
-        showWhoopConnectStatus('Credentials missing', 'Please enter your Client ID again.', 'Connect', openWhoopModal);
+      if (!clientId || !proxyUrl) {
+        showWhoopConnectStatus('Setup incomplete', 'Please re-enter your Client ID and Proxy URL.', 'Connect', openWhoopModal);
         return;
       }
 
       try {
-        const res = await fetch(WHOOP_TOKEN_URL, {
+        const res = await fetch(proxyUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams({
@@ -1363,9 +1371,10 @@
     async function refreshWhoopToken() {
       const clientId     = localStorage.getItem('whoop_client_id');
       const refreshToken = localStorage.getItem('whoop_refresh_token');
-      if (!refreshToken) return null;
+      const proxyUrl     = localStorage.getItem('whoop_proxy_url');
+      if (!refreshToken || !proxyUrl) return null;
       try {
-        const res = await fetch(WHOOP_TOKEN_URL, {
+        const res = await fetch(proxyUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: new URLSearchParams({
@@ -1395,7 +1404,7 @@
 
     function disconnectWhoop() {
       ['whoop_access_token','whoop_refresh_token','whoop_token_expiry',
-       'whoop_client_id','whoop_oauth_state','whoop_pkce_verifier'].forEach(k => localStorage.removeItem(k));
+       'whoop_client_id','whoop_proxy_url','whoop_oauth_state','whoop_pkce_verifier'].forEach(k => localStorage.removeItem(k));
       document.getElementById('whoop-data-card').style.display    = 'none';
       document.getElementById('whoop-connect-card').style.display = 'block';
     }
