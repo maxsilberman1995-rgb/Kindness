@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Daily Kindness</title>
+  <title>Daily Happiness Mission</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -247,18 +247,19 @@
 
     .bb {
       position: absolute;
-      opacity: 0.35;
+      opacity: 0.6;
+      filter: drop-shadow(0 4px 12px rgba(180, 60, 20, 0.25));
     }
 
     .bb svg { display: block; }
 
-    .bb1  { width: 200px; top: -50px;  left: -60px;  animation: bbdrift 22s ease-in-out infinite; }
-    .bb2  { width: 130px; top: 6%;     right: -30px; animation: bbdrift 18s ease-in-out infinite 3s; }
-    .bb3  { width: 110px; top: 38%;    left: -25px;  animation: bbdrift 25s ease-in-out infinite 6s; }
-    .bb4  { width: 160px; top: 52%;    right: -40px; animation: bbdrift 20s ease-in-out infinite 1s; }
-    .bb5  { width: 100px; bottom: 80px; left: 8%;    animation: bbdrift 16s ease-in-out infinite 9s; }
-    .bb6  { width: 130px; bottom: -30px; right: 12%; animation: bbdrift 24s ease-in-out infinite 4s; }
-    .bb7  { width: 90px;  top: 70%;    left: 42%;    animation: bbdrift 19s ease-in-out infinite 7s; }
+    .bb1  { width: 220px; top: -40px;  left: -30px;  animation: bbdrift 22s ease-in-out infinite; }
+    .bb2  { width: 140px; top: 5%;     right: -10px; animation: bbdrift 18s ease-in-out infinite 3s; }
+    .bb3  { width: 120px; top: 36%;    left: -10px;  animation: bbdrift 25s ease-in-out infinite 6s; }
+    .bb4  { width: 180px; top: 50%;    right: -20px; animation: bbdrift 20s ease-in-out infinite 1s; }
+    .bb5  { width: 110px; bottom: 60px; left: 6%;    animation: bbdrift 16s ease-in-out infinite 9s; }
+    .bb6  { width: 150px; bottom: -20px; right: 8%;  animation: bbdrift 24s ease-in-out infinite 4s; }
+    .bb7  { width: 100px; top: 68%;    left: 40%;    animation: bbdrift 19s ease-in-out infinite 7s; }
 
     @keyframes bbdrift {
       0%,  100% { transform: translateY(0)    rotate(0deg); }
@@ -301,7 +302,7 @@
   <div class="page active" id="page-today">
     <div class="card">
       <span class="emoji-big" id="mission-emoji">💛</span>
-      <div class="label">Today's Kindness Mission</div>
+      <div class="label">Today's Happiness Mission</div>
       <div class="badge" id="mission-badge">Mission #1</div>
       <h1 id="mission-title">Loading…</h1>
       <p class="description" id="mission-desc"></p>
@@ -419,17 +420,17 @@
     function loadState() {
       const todayKey = getTodayKey();
       return {
-        streak: parseInt(localStorage.getItem('kindness_streak') || '0'),
-        lastCompleted: localStorage.getItem('kindness_last_completed') || '',
-        completedToday: localStorage.getItem('kindness_completed_today') === 'true' &&
-                        localStorage.getItem('kindness_today_key') === todayKey,
+        streak: parseInt(localStorage.getItem('happiness_streak') || '0'),
+        lastCompleted: localStorage.getItem('happiness_last_completed') || '',
+        completedToday: localStorage.getItem('happiness_completed_today') === 'true' &&
+                        localStorage.getItem('happiness_today_key') === todayKey,
       };
     }
 
     function saveCompletion() {
       const today = getTodayKey();
-      const last = localStorage.getItem('kindness_last_completed') || '';
-      let streak = parseInt(localStorage.getItem('kindness_streak') || '0');
+      const last = localStorage.getItem('happiness_last_completed') || '';
+      let streak = parseInt(localStorage.getItem('happiness_streak') || '0');
 
       const yesterday = new Date();
       yesterday.setDate(yesterday.getDate() - 1);
@@ -437,17 +438,17 @@
 
       streak = (last === yKey || last === '') ? streak + 1 : (last !== today ? 1 : streak);
 
-      localStorage.setItem('kindness_streak', streak);
-      localStorage.setItem('kindness_last_completed', today);
-      localStorage.setItem('kindness_completed_today', 'true');
-      localStorage.setItem('kindness_today_key', today);
+      localStorage.setItem('happiness_streak', streak);
+      localStorage.setItem('happiness_last_completed', today);
+      localStorage.setItem('happiness_completed_today', 'true');
+      localStorage.setItem('happiness_today_key', today);
 
       // Save to history
-      const history = JSON.parse(localStorage.getItem('kindness_history') || '[]');
+      const history = JSON.parse(localStorage.getItem('happiness_history') || '[]');
       const mission = MISSIONS[getDayIndex() % MISSIONS.length];
       if (!history.find(h => h.date === today)) {
         history.unshift({ date: today, mission });
-        localStorage.setItem('kindness_history', JSON.stringify(history));
+        localStorage.setItem('happiness_history', JSON.stringify(history));
       }
 
       return streak;
@@ -461,7 +462,7 @@
       const dayIdx = getDayIndex();
       const today = new Date();
 
-      const history = JSON.parse(localStorage.getItem('kindness_history') || '[]');
+      const history = JSON.parse(localStorage.getItem('happiness_history') || '[]');
       const missionNum = state.completedToday ? history.length : history.length + 1;
 
       document.getElementById('mission-emoji').textContent = mission.emoji;
@@ -495,7 +496,7 @@
     // ── RENDER MISSIONS HISTORY ───────────────────────────
     function renderMissions() {
       const list = document.getElementById('missions-list');
-      const history = JSON.parse(localStorage.getItem('kindness_history') || '[]');
+      const history = JSON.parse(localStorage.getItem('happiness_history') || '[]');
 
       if (history.length === 0) {
         list.innerHTML = '<div class="empty">No completed missions yet.<br>Complete today\'s mission to start your log!</div>';
