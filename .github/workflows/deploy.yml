@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - claude/kindness-mission-app-B9QBb
   workflow_dispatch:
 
 permissions:
