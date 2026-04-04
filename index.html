@@ -1342,11 +1342,13 @@ nav { z-index: 10; }
       whoopStatus('Loading…');
 
       try {
-        const headers = { Authorization: `Bearer ${token}` };
+        const proxyBase = (localStorage.getItem('whoop_proxy_url') || '').replace(/\/$/, '');
+        const apiBase   = proxyBase ? `${proxyBase}/v1` : WHOOP_API;
+        const headers   = { Authorization: `Bearer ${token}` };
         const [recRes, sleepRes, cycleRes] = await Promise.all([
-          fetch(`${WHOOP_API}/recovery?limit=1`,       { headers }),
-          fetch(`${WHOOP_API}/activity/sleep?limit=1`, { headers }),
-          fetch(`${WHOOP_API}/cycle?limit=1`,          { headers }),
+          fetch(`${apiBase}/recovery?limit=1`,       { headers }),
+          fetch(`${apiBase}/activity/sleep?limit=1`, { headers }),
+          fetch(`${apiBase}/cycle?limit=1`,          { headers }),
         ]);
 
         // Surface HTTP errors
