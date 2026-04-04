@@ -607,6 +607,8 @@ nav { z-index: 10; }
         </div>
       </div>
       <div class="whoop-insight-bar" id="whoop-insight"></div>
+      <div id="whoop-status-msg" style="display:none;font-size:0.78rem;color:#b45309;background:#fef3c7;border-radius:8px;padding:8px 12px;margin-top:8px;text-align:center;"></div>
+      <button onclick="loadWhoopData()" style="margin-top:10px;background:none;border:1px solid #d1d5db;border-radius:8px;padding:5px 14px;font-size:0.78rem;color:#6b7280;cursor:pointer;width:100%;">↻ Refresh</button>
     </div>
 
 ```
@@ -1324,36 +1326,70 @@ nav { z-index: 10; }
       return                  { cls: 'red',    text: 'Low recovery. Prioritize rest, gentle movement, and recovery-focused activities today.' };
     }
 
+    function whoopStatus(msg) {
+      const el = document.getElementById('whoop-status-msg');
+      if (!msg) { el.style.display = 'none'; return; }
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+
     async function loadWhoopData() {
       const token = await getWhoopToken();
       if (!token) return;
 
       document.getElementById('whoop-data-card').style.display    = 'block';
       document.getElementById('whoop-connect-card').style.display = 'none';
+      whoopStatus('Loading…');
 
       try {
+        const headers = { Authorization: `Bearer ${token}` };
         const [recRes, sleepRes, cycleRes] = await Promise.all([
-          fetch(`${WHOOP_API}/recovery?limit=1`,       { headers: { Authorization: `Bearer ${token}` } }),
-          fetch(`${WHOOP_API}/activity/sleep?limit=1`, { headers: { Authorization: `Bearer ${token}` } }),
-          fetch(`${WHOOP_API}/cycle?limit=1`,          { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${WHOOP_API}/recovery?limit=1`,       { headers }),
+          fetch(`${WHOOP_API}/activity/sleep?limit=1`, { headers }),
+          fetch(`${WHOOP_API}/cycle?limit=1`,          { headers }),
         ]);
+
+        // Surface HTTP errors
+        if (!recRes.ok || !sleepRes.ok || !cycleRes.ok) {
+          const bad = [recRes, sleepRes, cycleRes].find(r => !r.ok);
+          if (bad.status === 401) {
+            localStorage.removeItem('whoop_access_token');
+            localStorage.removeItem('whoop_refresh_token');
+            document.getElementById('whoop-data-card').style.display    = 'none';
+            document.getElementById('whoop-connect-card').style.display = 'block';
+            showWhoopConnectStatus('Session expired', 'Please reconnect your WHOOP account.', 'Reconnect', openWhoopModal);
+            return;
+          }
+          whoopStatus(`WHOOP API error ${bad.status} — try refreshing.`);
+          return;
+        }
 
         const recData   = await recRes.json();
         const sleepData = await sleepRes.json();
         const cycleData = await cycleRes.json();
 
-        const rec   = recData.records?.[0]?.score;
-        const sleep = sleepData.records?.[0]?.score;
-        const cycle = cycleData.records?.[0]?.score;
+        // Log raw data so you can inspect in browser console (F12) if needed
+        console.log('WHOOP raw:', JSON.stringify({ recData, sleepData, cycleData }, null, 2));
+
+        const recRecord   = recData.records?.[0];
+        const sleepRecord = sleepData.records?.[0];
+        const cycleRecord = cycleData.records?.[0];
+
+        const rec   = recRecord?.score_state   === 'SCORED' ? recRecord.score   : null;
+        const sleep = sleepRecord?.score_state === 'SCORED' ? sleepRecord.score : null;
+        const cycle = cycleRecord?.score_state === 'SCORED' ? cycleRecord.score : null;
+
+        let anyData = false;
 
         if (rec) {
-          const recovery = Math.round(rec.recovery_score);
-          const hrv      = Math.round(rec.hrv_rmssd_milli);
+          anyData = true;
+          const recovery = Math.round(rec.recovery_score ?? 0);
+          const hrv      = Math.round(rec.hrv_rmssd_milli ?? 0);
           const cls      = recoveryColor(recovery);
           const el       = document.getElementById('whoop-recovery');
           el.textContent = recovery + '%';
           el.className   = `whoop-score ${cls}`;
-          document.getElementById('whoop-hrv').textContent = hrv;
+          document.getElementById('whoop-hrv').textContent = hrv || '--';
           const insight = recoveryInsight(recovery);
           const bar = document.getElementById('whoop-insight');
           bar.textContent = insight.text;
@@ -1361,6 +1397,7 @@ nav { z-index: 10; }
         }
 
         if (sleep?.sleep_performance_percentage != null) {
+          anyData = true;
           const sp = Math.round(sleep.sleep_performance_percentage);
           const el = document.getElementById('whoop-sleep');
           el.textContent = sp + '%';
@@ -1368,16 +1405,27 @@ nav { z-index: 10; }
         }
 
         if (cycle?.strain != null) {
-          const el        = document.getElementById('whoop-strain');
-          el.textContent  = cycle.strain.toFixed(1);
-          el.className    = `whoop-score ${cycle.strain > 14 ? 'red' : cycle.strain > 9 ? 'yellow' : 'green'}`;
+          anyData = true;
+          const el       = document.getElementById('whoop-strain');
+          el.textContent = cycle.strain.toFixed(1);
+          el.className   = `whoop-score ${cycle.strain > 14 ? 'red' : cycle.strain > 9 ? 'yellow' : 'green'}`;
         }
 
         document.getElementById('whoop-data-date').textContent =
           new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
 
+        if (!anyData) {
+          const pending = [recRecord, sleepRecord, cycleRecord].some(r => r?.score_state === 'PENDING_SCORE');
+          whoopStatus(pending
+            ? 'WHOOP is still calculating your scores — check back in a few minutes.'
+            : 'No WHOOP data available yet. Scores appear after your first sleep cycle.');
+        } else {
+          whoopStatus(null);
+        }
+
       } catch (e) {
         console.error('WHOOP data fetch failed:', e);
+        whoopStatus(`Failed to load WHOOP data: ${e.message}. Check your connection and try refreshing.`);
       }
     }
 
