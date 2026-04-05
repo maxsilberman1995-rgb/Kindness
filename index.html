@@ -1361,8 +1361,7 @@ nav { z-index: 10; }
           return;
         }
 
-        // Show status codes on screen for debugging
-        whoopStatus(`rec:${recRes.status} sleep:${sleepRes.status} cycle:${cycleRes.status}`);
+        const _dbg = `rec:${recRes.status} sleep:${sleepRes.status} cycle:${cycleRes.status}`;
 
         const safeJson = async r => {
           if (!r.ok) return null;
@@ -1429,7 +1428,7 @@ nav { z-index: 10; }
           } else if (pending) {
             whoopStatus('Recovery & sleep scores still calculating — check back after your morning sync.');
           } else {
-            whoopStatus('Recovery & sleep not loading. Try disconnecting and reconnecting WHOOP — make sure all permissions are checked on the WHOOP consent screen.');
+            whoopStatus(`Recovery & sleep not loading (${_dbg}). Disconnect and reconnect WHOOP, approving all permissions on the consent screen.`);
           }
         } else {
           whoopStatus(null);
