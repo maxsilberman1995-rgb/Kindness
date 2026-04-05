@@ -1213,21 +1213,23 @@ nav { z-index: 10; }
         return;
       }
 
-      const clientId  = localStorage.getItem('whoop_client_id');
-      const verifier  = localStorage.getItem('whoop_pkce_verifier');
-      const proxyUrl  = localStorage.getItem('whoop_proxy_url');
+      const clientId     = localStorage.getItem('whoop_client_id');
+      const clientSecret = localStorage.getItem('whoop_client_secret');
+      const verifier     = localStorage.getItem('whoop_pkce_verifier');
+      const proxyUrl     = localStorage.getItem('whoop_proxy_url');
 
-      if (!clientId || !proxyUrl) {
-        showWhoopConnectStatus('Setup incomplete', 'Please re-enter your Client ID and Proxy URL.', 'Connect', openWhoopModal);
+      if (!clientId || !clientSecret || !proxyUrl) {
+        showWhoopConnectStatus('Setup incomplete', 'Please re-enter your Client ID, Client Secret, and Proxy URL.', 'Connect', openWhoopModal);
         return;
       }
 
       try {
         const params = {
-          grant_type:   'authorization_code',
+          grant_type:    'authorization_code',
           code,
-          redirect_uri: getRedirectUri(),
-          client_id:    clientId,
+          redirect_uri:  getRedirectUri(),
+          client_id:     clientId,
+          client_secret: clientSecret,
         };
         if (verifier) params.code_verifier = verifier;
         const res = await fetch(proxyUrl, {
@@ -1275,6 +1277,7 @@ nav { z-index: 10; }
             grant_type:    'refresh_token',
             refresh_token: refreshToken,
             client_id:     clientId,
+            client_secret: localStorage.getItem('whoop_client_secret') || '',
           }),
         });
         const data = await res.json();
