@@ -590,11 +590,11 @@ nav { z-index: 10; }
       </div>
       <div class="whoop-metrics">
         <div class="whoop-metric">
-          <div class="whoop-score neutral" id="whoop-recovery">--</div>
+          <div class="whoop-score neutral" id="whoop-recovery">–</div>
           <div class="whoop-metric-label">Recovery</div>
         </div>
         <div class="whoop-metric">
-          <div class="whoop-score neutral" id="whoop-sleep">--</div>
+          <div class="whoop-score neutral" id="whoop-sleep">–</div>
           <div class="whoop-metric-label">Sleep</div>
         </div>
         <div class="whoop-metric">
@@ -602,7 +602,7 @@ nav { z-index: 10; }
           <div class="whoop-metric-label">Strain</div>
         </div>
         <div class="whoop-metric">
-          <div class="whoop-score blue" id="whoop-hrv">--</div>
+          <div class="whoop-score blue" id="whoop-hrv">–</div>
           <div class="whoop-metric-label">HRV ms</div>
         </div>
       </div>
@@ -1416,11 +1416,17 @@ nav { z-index: 10; }
         document.getElementById('whoop-data-date').textContent =
           new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
 
-        if (!anyData) {
-          const pending = [recRecord, sleepRecord, cycleRecord].some(r => r?.score_state === 'PENDING_SCORE');
-          whoopStatus(pending
-            ? 'WHOOP is still calculating your scores — check back in a few minutes.'
-            : 'No WHOOP data yet — make sure your device has synced recently and you\'ve completed a sleep cycle.');
+        const missingRec   = !rec;
+        const missingSleep = !sleep;
+        if (missingRec || missingSleep) {
+          const pending = [recRecord, sleepRecord].some(r => r?.score_state === 'PENDING_SCORE');
+          if (!anyData) {
+            whoopStatus('No WHOOP data yet — make sure your device has synced recently.');
+          } else if (pending) {
+            whoopStatus('Recovery & sleep scores still calculating — check back after your morning sync.');
+          } else {
+            whoopStatus('Recovery & sleep update each morning after your device syncs from last night\'s sleep.');
+          }
         } else {
           whoopStatus(null);
         }
