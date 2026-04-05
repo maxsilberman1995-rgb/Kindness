@@ -1351,32 +1351,31 @@ nav { z-index: 10; }
           fetch(`${apiBase}/cycle?limit=1`,          { headers }),
         ]);
 
-        // Surface HTTP errors
-        if (!recRes.ok || !sleepRes.ok || !cycleRes.ok) {
-          const bad     = [recRes, sleepRes, cycleRes].find(r => !r.ok);
-          const badBody = await bad.clone().text().catch(() => '');
-          if (bad.status === 401) {
-            localStorage.removeItem('whoop_access_token');
-            localStorage.removeItem('whoop_refresh_token');
-            document.getElementById('whoop-data-card').style.display    = 'none';
-            document.getElementById('whoop-connect-card').style.display = 'block';
-            showWhoopConnectStatus('Session expired', 'Please reconnect your WHOOP account.', 'Reconnect', openWhoopModal);
-            return;
-          }
-          whoopStatus(`WHOOP API error ${bad.status}: ${badBody || '(no body)'}`);
+        // 401 on any endpoint = session expired
+        if ([recRes, sleepRes, cycleRes].some(r => r.status === 401)) {
+          localStorage.removeItem('whoop_access_token');
+          localStorage.removeItem('whoop_refresh_token');
+          document.getElementById('whoop-data-card').style.display    = 'none';
+          document.getElementById('whoop-connect-card').style.display = 'block';
+          showWhoopConnectStatus('Session expired', 'Please reconnect your WHOOP account.', 'Reconnect', openWhoopModal);
           return;
         }
 
-        const recData   = await recRes.json();
-        const sleepData = await sleepRes.json();
-        const cycleData = await cycleRes.json();
+        // Parse each response independently; 404 = no data yet for that endpoint
+        const safeJson = async r => {
+          if (r.status === 404) return null;
+          try { return await r.json(); } catch { return null; }
+        };
+        const recData   = await safeJson(recRes);
+        const sleepData = await safeJson(sleepRes);
+        const cycleData = await safeJson(cycleRes);
 
         // Log raw data so you can inspect in browser console (F12) if needed
         console.log('WHOOP raw:', JSON.stringify({ recData, sleepData, cycleData }, null, 2));
 
-        const recRecord   = recData.records?.[0];
-        const sleepRecord = sleepData.records?.[0];
-        const cycleRecord = cycleData.records?.[0];
+        const recRecord   = recData?.records?.[0];
+        const sleepRecord = sleepData?.records?.[0];
+        const cycleRecord = cycleData?.records?.[0];
 
         const rec   = recRecord?.score_state   === 'SCORED' ? recRecord.score   : null;
         const sleep = sleepRecord?.score_state === 'SCORED' ? sleepRecord.score : null;
@@ -1421,7 +1420,7 @@ nav { z-index: 10; }
           const pending = [recRecord, sleepRecord, cycleRecord].some(r => r?.score_state === 'PENDING_SCORE');
           whoopStatus(pending
             ? 'WHOOP is still calculating your scores — check back in a few minutes.'
-            : 'No WHOOP data available yet. Scores appear after your first sleep cycle.');
+            : 'No WHOOP data yet — make sure your device has synced recently and you\'ve completed a sleep cycle.');
         } else {
           whoopStatus(null);
         }
