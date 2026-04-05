@@ -1361,14 +1361,16 @@ nav { z-index: 10; }
           return;
         }
 
-        // Parse each response independently; 404 = no data yet for that endpoint
-        const safeJson = async r => {
-          if (r.status === 404) return null;
+        // Parse each response; surface permission errors
+        const safeJson = async (r, name) => {
+          if (r.status === 403) { console.warn(`WHOOP ${name}: 403 Forbidden — token may be missing scope`); return null; }
+          if (r.status === 404) { console.warn(`WHOOP ${name}: 404 — no data`); return null; }
+          if (!r.ok) { console.warn(`WHOOP ${name}: HTTP ${r.status}`); return null; }
           try { return await r.json(); } catch { return null; }
         };
-        const recData   = await safeJson(recRes);
-        const sleepData = await safeJson(sleepRes);
-        const cycleData = await safeJson(cycleRes);
+        const recData   = await safeJson(recRes,   'recovery');
+        const sleepData = await safeJson(sleepRes, 'sleep');
+        const cycleData = await safeJson(cycleRes, 'cycle');
 
         // Log raw data so you can inspect in browser console (F12) if needed
         console.log('WHOOP raw:', JSON.stringify({ recData, sleepData, cycleData }, null, 2));
@@ -1427,7 +1429,7 @@ nav { z-index: 10; }
           } else if (pending) {
             whoopStatus('Recovery & sleep scores still calculating — check back after your morning sync.');
           } else {
-            whoopStatus('Recovery & sleep update each morning after your device syncs from last night\'s sleep.');
+            whoopStatus('Recovery & sleep not loading. Try disconnecting and reconnecting WHOOP — make sure all permissions are checked on the WHOOP consent screen.');
           }
         } else {
           whoopStatus(null);
