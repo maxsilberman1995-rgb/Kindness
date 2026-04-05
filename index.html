@@ -1345,10 +1345,11 @@ nav { z-index: 10; }
         const proxyBase = (localStorage.getItem('whoop_proxy_url') || '').replace(/\/$/, '');
         const apiBase   = proxyBase ? `${proxyBase}/v1` : WHOOP_API;
         const headers   = { Authorization: `Bearer ${token}` };
+        const start = new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString();
         const [recRes, sleepRes, cycleRes] = await Promise.all([
-          fetch(`${apiBase}/recovery?limit=7`,       { headers }),
-          fetch(`${apiBase}/activity/sleep?limit=7`, { headers }),
-          fetch(`${apiBase}/cycle?limit=1`,          { headers }),
+          fetch(`${apiBase}/recovery?limit=7&start=${start}`,       { headers }),
+          fetch(`${apiBase}/activity/sleep?limit=7&start=${start}`, { headers }),
+          fetch(`${apiBase}/cycle?limit=1`,                         { headers }),
         ]);
 
         // 401 on any endpoint = session expired
