@@ -1213,28 +1213,27 @@ nav { z-index: 10; }
         return;
       }
 
-      const clientId     = localStorage.getItem('whoop_client_id');
-      const clientSecret = localStorage.getItem('whoop_client_secret'); // ✅ FIX
-      const verifier     = localStorage.getItem('whoop_pkce_verifier');
-      const proxyUrl     = localStorage.getItem('whoop_proxy_url');
+      const clientId  = localStorage.getItem('whoop_client_id');
+      const verifier  = localStorage.getItem('whoop_pkce_verifier');
+      const proxyUrl  = localStorage.getItem('whoop_proxy_url');
 
-      if (!clientId || !clientSecret || !proxyUrl) {
-        showWhoopConnectStatus('Setup incomplete', 'Please re-enter your credentials.', 'Connect', openWhoopModal);
+      if (!clientId || !proxyUrl) {
+        showWhoopConnectStatus('Setup incomplete', 'Please re-enter your Client ID and Proxy URL.', 'Connect', openWhoopModal);
         return;
       }
 
       try {
+        const params = {
+          grant_type:   'authorization_code',
+          code,
+          redirect_uri: getRedirectUri(),
+          client_id:    clientId,
+        };
+        if (verifier) params.code_verifier = verifier;
         const res = await fetch(proxyUrl, {
-          method: 'POST',
+          method:  'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({
-            grant_type:    'authorization_code',
-            code,
-            redirect_uri:  getRedirectUri(),
-            client_id:     clientId,
-            client_secret: clientSecret, // ✅ FIX: was missing
-            code_verifier: verifier,
-          }),
+          body:    new URLSearchParams(params),
         });
 
         let data;
@@ -1257,15 +1256,14 @@ nav { z-index: 10; }
       } catch (e) {
         showWhoopConnectStatus(
           'Connection failed',
-          `Network error: ${e.message}. Check that your Proxy URL is deployed and accessible.`,
+          `Network error: "${e.message}". The proxy may be down, or the authorization code expired (they last ~30 seconds — try reconnecting quickly). Proxy: ${proxyUrl}`,
           'Try Again', openWhoopModal
         );
       }
     }
 
     async function refreshWhoopToken() {
-      const clientId     = localStorage.getItem('whoop_client_id');
-      const clientSecret = localStorage.getItem('whoop_client_secret'); // ✅ FIX
+      const clientId = localStorage.getItem('whoop_client_id');
       const refreshToken = localStorage.getItem('whoop_refresh_token');
       const proxyUrl     = localStorage.getItem('whoop_proxy_url');
       if (!refreshToken || !proxyUrl) return null;
@@ -1277,7 +1275,6 @@ nav { z-index: 10; }
             grant_type:    'refresh_token',
             refresh_token: refreshToken,
             client_id:     clientId,
-            client_secret: clientSecret, // ✅ FIX: was missing
           }),
         });
         const data = await res.json();
